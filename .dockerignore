@@ -1,0 +1,12 @@
+# Ignore the following files and directories when building the Docker image
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.git
+.gitignore
+.pytest_cache/
+.venv/
+venv/
+ENV/
