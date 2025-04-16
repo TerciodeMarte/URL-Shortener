@@ -1,0 +1,72 @@
+# Archivos de entorno y configuración
+.env
+*.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+.python-version
+
+# Archivos de caché Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Distribución / empaquetado
+*.egg
+*.egg-info/
+dist/
+build/
+eggs/
+.eggs/
+*.manifest
+*.spec
+
+# Archivos de prueba unitaria / cobertura
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Archivos de IDE y editores
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+log/
+
+# Archivos de base de datos local
+*.db
+*.sqlite3
+
+# Archivos generados durante el desarrollo
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.pyre/
+
+# Archivos específicos de Redis
+dump.rdb
+appendonly.aof
+
+# Otros archivos temporales
+.temp/
+tmp/
+temp/

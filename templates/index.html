@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>URL Shortener</title>
+        <!-- Favicon -->
+        <link rel="icon" type="image/png" href="/static/logo-simple-negative-rb.png">
+        <!-- Importar la fuente Ubuntu de Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap" rel="stylesheet">
+        <style>
+            body {
+                font-family: 'Ubuntu', sans-serif;
+                margin: 0;
+                padding: 0;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                background-color: #111a27;
+                color: #ffffff; 
+            }
+            .container {
+                background-color: #182449;
+                padding: 50px;
+                border-radius: 8px;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                width: 100%;
+                max-width: 500px;
+                max-height: 600px;
+            }
+            input[type="text"] {
+                width: calc(100% - 120px);
+                padding: 10px;
+                margin: 10px 0;
+                box-sizing: border-box;
+                background-color: #435db1;
+                border: 1px solid #435db1;
+                border-radius: 4px;
+                color: #ffffff;
+                display: inline-block;
+                vertical-align: middle;
+                height: 45px;
+                line-height: 25px;
+            }
+            ::placeholder {
+                color: #d3d3d3;
+            }
+            button {
+                background-color: #9eb1ff; 
+                color: white;
+                padding: 8px 15px; 
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                display: inline-block;
+                vertical-align: middle;
+                margin-left: 8px;
+                width: 110px;
+                height: 45px; 
+                font-size: 14px;
+            }
+            button:hover {
+                background-color: #435db1;
+            }
+            
+            /* Contenedor para el input y botón */
+            .input-group {
+                display: flex;
+                align-items: center;
+                margin: 10px 0;
+            }
+            .input-group input {
+                flex: 1;
+                margin: 0;
+                width: 100%;
+            }
+            .input-group button {
+                margin-left: 10px;
+                font-weight: 700;
+            }
+            #result {
+                margin-top: 20px;
+                padding: 10px;
+                border: 1px solid #70b8ff;
+                display: none;
+                background-color: rgba(112, 184, 255, 0.1);
+                border-radius: 8px;
+                opacity: 0;
+                transform: translateY(-20px);
+                transition: opacity 0.5s ease, transform 0.5s ease;
+            }
+            
+            #result.show {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            .animate-fadeInUp {
+                animation: fadeInUp 0.6s ease forwards;
+            }
+            
+            /* Estilos para los toast */
+            .toast {
+                position: fixed;
+                top: 20px; 
+                left: 50%;        
+                transform: translateX(-50%);
+                background-color: #333;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 5px;
+                box-shadow: 0 0 10px rgba(0,0,0,0.2);
+                opacity: 0;
+                transition: opacity 0.3s ease-in-out;
+                z-index: 1000;
+            }
+            .toast.show {
+                opacity: 1;
+            }
+            .toast.success {
+                background-color: #4CAF50;
+            }
+            .toast.error {
+                background-color: #f44336;
+            }
+            .toast.info {
+                background-color: #9eb1ff;
+            }
+            /* Estilos para el logo en el título */
+            .title-container {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            
+            .title-logo {
+                max-height: 40px;
+                width: auto;
+            }
+
+            h1 {
+                color: #70b8ff; /* Texto énfasis */
+            }
+
+            a {
+                color: #70b8ff;
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            /* Estilos para el footer */
+            .footer {
+                margin-top: 30px;
+                text-align: center;
+                font-size: 14px;
+                color: #70b8ff;
+                padding-top: 20px;
+                border-top: 1px solid rgba(112, 184, 255, 0.3);
+            }
+            
+            .footer .heart {
+                color: #f44336;
+                display: inline-block;
+                animation: heartbeat 1.5s infinite ease-in-out;
+            }
+            
+            @keyframes heartbeat {
+                0%, 100% { transform: scale(1); }
+                50% { transform: scale(1.2); }
+            }
+        </style>
+        <script>
+            // Esta variable será reemplazada por el servidor con el valor real de la variable de entorno
+            window.baseUrl = '{{ BASE_URL }}'; // El formato exacto depende de tu motor de plantillas
+        </script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="title-container">
+                <img src="/static/logo-simple-negative-rb.png" alt="Logo" class="title-logo">
+                <h2>Café Con Palito</h2>
+            </div>
+            <h2>Shortener</h2>
+            <p>Enter a URL to shorten it:</p>
+            <div class="input-group">
+                <input type="text" id="original_url" placeholder="https://example.com/long/path">
+                <button onclick="shortenURL()">Shorten URL</button>
+            </div>
+            <div id="result"></div>
+            
+            <!-- Footer -->
+            <div class="footer">
+                Made by Café Con Palito<br>
+                With <span class="heart">❤️</span>
+            </div>
+
+            <script>
+                // Función para mostrar toast
+                function showToast(message, type = 'info', duration = 3000) {
+                    // Eliminar toast anterior si existe
+                    const existingToast = document.querySelector('.toast');
+                    if (existingToast) {
+                        document.body.removeChild(existingToast);
+                    }
+                    
+                    // Crear nuevo toast
+                    const toast = document.createElement('div');
+                    toast.className = `toast ${type}`;
+                    toast.textContent = message;
+                    
+                    // Añadir al DOM
+                    document.body.appendChild(toast);
+                    
+                    // Mostrar el toast
+                    setTimeout(() => {
+                        toast.classList.add('show');
+                    }, 10);
+                    
+                    // Ocultar y eliminar después de la duración
+                    setTimeout(() => {
+                        toast.classList.remove('show');
+                        
+                        // Eliminar del DOM cuando termine la transición
+                        setTimeout(() => {
+                            if (toast.parentNode) {
+                                document.body.removeChild(toast);
+                            }
+                        }, 300);
+                    }, duration);
+                }
+                
+                // Controlar el placeholder del campo de texto
+                document.addEventListener('DOMContentLoaded', function() {
+                    const urlInput = document.getElementById('original_url');
+                    const placeholderText = "https://example.com/long/path";
+                    
+                    // Cuando el input recibe el foco
+                    urlInput.addEventListener('focus', function() {
+                        if (this.placeholder === placeholderText) {
+                            this.placeholder = '';
+                        }
+                    });
+                    
+                    // Cuando el input pierde el foco
+                    urlInput.addEventListener('blur', function() {
+                        if (this.value === '') {
+                            this.placeholder = placeholderText;
+                        }
+                    });
+                });
+                
+                async function shortenURL() {
+                    const originalUrl = document.getElementById('original_url').value;
+                    if (!originalUrl) {
+                        showToast('Please enter a URL', 'error');
+                        return;
+                    }
+                    
+                    try {
+                        // Usar la URL base del servidor desde una variable inyectada
+                        const baseUrl = window.baseUrl || 'http://localhost:8000/'; // Valor por defecto vacío si no está definido
+                        const response = await fetch(baseUrl + 'short/?original_url=' + encodeURIComponent(originalUrl), {
+                            method: 'POST'
+                        });
+                        
+                        if (response.ok) {
+                            const data = await response.json();
+                            const resultDiv = document.getElementById('result');
+                            
+                            // Reiniciar clases y estilos
+                            resultDiv.classList.remove('show', 'animate-fadeInUp');
+                            resultDiv.style.display = 'block';
+                            
+                            resultDiv.innerHTML = `
+                                <p>Shortened URL:</p>
+                                <p><a href="${data.short_url}" target="_blank">${data.short_url}</a></p>
+                                <p style="font-size: 0.85em; color: #ffaa5a; margin-top: 8px;"><i>⚠️ Note: This link will only be available for 24 hours.</i></p>
+                            `;
+                            
+                            // Forzar un reflow para reiniciar la animación si ya se ha mostrado antes
+                            void resultDiv.offsetWidth;
+                            
+                            // Aplicar la animación
+                            resultDiv.classList.add('show', 'animate-fadeInUp');
+                            
+                            showToast('URL shortened successfully', 'success');
+                        } else {
+                            showToast('Error shortening URL', 'error');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        showToast('Error processing request', 'error');
+                    }
+                }
+            </script>
+        </div>
+    </body>
+</html>
